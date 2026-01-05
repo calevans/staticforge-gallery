@@ -1,0 +1,28 @@
+{
+    "name": "calevans/gallery",
+    "description": "StaticForge Feature: PhotoGallery",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Calevans\\Gallery\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Calevans\\Gallery\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "eicc/staticforge": ">=1.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    },
+    "extra": {
+        "staticforge": {
+            "feature": "Calevans\\Gallery\\Feature"
+        }
+    }
+}

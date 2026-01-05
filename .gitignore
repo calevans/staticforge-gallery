@@ -1,0 +1,9 @@
+#
+# Directories
+#
+vendor/
+
+#
+# Files
+#
+*.log
