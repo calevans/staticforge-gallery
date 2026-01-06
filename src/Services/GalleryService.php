@@ -29,7 +29,7 @@ class GalleryService
     {
         // Clean up the gallery path
         $cleanPath = trim($galleryPath, '/');
-        
+
         // Construct full path: content/{galleryPath}
         // We assume the user provides the full relative path from source root, e.g. "assets/images/trip"
         $fullPath = rtrim($baseDir, '/') . DIRECTORY_SEPARATOR . $cleanPath;
@@ -50,7 +50,8 @@ class GalleryService
                 if ($file->isFile() && $this->isImage($file)) {
                     // Calculate relative path for the src attribute
                     // It should be /{galleryPath}/{filename}
-                    $relativePath = '/' . $cleanPath . '/' . $file->getFilename();
+                    // We use rawurlencode to handle spaces and special characters in filenames
+                    $relativePath = '/' . $cleanPath . '/' . rawurlencode($file->getFilename());
 
                     $images[] = [
                         'src' => $relativePath,

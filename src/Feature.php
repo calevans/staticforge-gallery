@@ -23,7 +23,8 @@ class Feature extends BaseFeature implements FeatureInterface
      * @var array<string, array{method: string, priority: int}>
      */
     protected array $eventListeners = [
-        'POST_LOOP' => ['method' => 'copyAssets', 'priority' => 100]
+        'POST_LOOP' => ['method' => 'copyAssets', 'priority' => 100],
+        'CONSOLE_INIT' => ['method' => 'registerShortcode', 'priority' => 0]
     ];
 
     public function register(EventManager $eventManager, Container $container): void
@@ -31,13 +32,16 @@ class Feature extends BaseFeature implements FeatureInterface
         parent::register($eventManager, $container);
         $this->logger = $container->get('logger');
         $this->galleryService = new GalleryService($this->logger);
+    }
 
+    public function registerShortcode(Container $container, array $payload): array
+    {
         // Register Shortcode
         // We check if ShortcodeManager is available.
         // Note: ShortcodeProcessor must be loaded before this feature.
         try {
-            $shortcodeManager = $container->get(ShortcodeManager::class);
-            if ($shortcodeManager) {
+            if ($container->has(ShortcodeManager::class)) {
+                $shortcodeManager = $container->get(ShortcodeManager::class);
                 $shortcode = new GalleryShortcode($this->galleryService);
                 $shortcodeManager->register($shortcode);
                 $this->logger->log('INFO', 'Gallery shortcode registered.');
@@ -47,6 +51,8 @@ class Feature extends BaseFeature implements FeatureInterface
         } catch (\Exception $e) {
              $this->logger->log('WARNING', 'Failed to register Gallery shortcode: ' . $e->getMessage());
         }
+
+        return $payload;
     }
 
     public function copyAssets(Container $container): void
