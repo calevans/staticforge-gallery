@@ -50,7 +50,13 @@ class GalleryShortcode extends BaseShortcode
             return '<div class="alert alert-warning">No images found in gallery: ' . htmlspecialchars($path) . '</div>';
         }
 
-        $id = 'gallery-' . uniqid();
+        $id = $attributes['id'] ?? '';
+        if (empty($id)) {
+            if ($this->container && $this->container->has('logger')) {
+                $this->container->get('logger')->log('ERROR', 'Gallery shortcode missing required "id" attribute. Path: ' . $path);
+            }
+            return '<div class="alert alert-danger">Gallery ID not specified</div>';
+        }
 
         // Parse options
         $rowHeight = isset($attributes['rowHeight']) ? (int)$attributes['rowHeight'] : 200;

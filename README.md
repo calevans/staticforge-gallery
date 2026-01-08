@@ -22,10 +22,10 @@ The feature registers a `[gallery]` shortcode that you can use in your Markdown 
 
 ### Basic Usage
 
-To display a gallery of images located in `content/assets/images/vacation`, use the following shortcode:
+To display a gallery of images located in `content/assets/images/vacation`, use the following shortcode. Note that the `id` attribute is required and must be unique for each gallery on a page:
 
 ```markdown
-[gallery path="assets/images/vacation"]
+[gallery path="assets/images/vacation" id="my-vacation-gallery"]
 ```
 
 ### Customizing the Layout
@@ -33,7 +33,7 @@ To display a gallery of images located in `content/assets/images/vacation`, use 
 You can customize the appearance of the gallery using additional attributes:
 
 ```markdown
-[gallery path="assets/images/portfolio" rowHeight="250" margins="15" lastRow="justify"]
+[gallery path="assets/images/portfolio" id="portfolio-gallery" rowHeight="250" margins="15" lastRow="justify"]
 ```
 
 ### Available Attributes
@@ -41,6 +41,7 @@ You can customize the appearance of the gallery using additional attributes:
 | Attribute | Description | Default |
 |-----------|-------------|---------|
 | `path` | **Required**. The path to the directory containing your images, relative to your source directory (e.g., `assets/images/my-gallery`). | N/A |
+| `id` | **Required**. A unique identifier for the gallery (e.g., `vacation-pics`). | N/A |
 | `rowHeight` | The preferred height of rows in pixels. | `200` |
 | `margins` | The margin between images in pixels. | `10` |
 | `lastRow` | How to handle the last row. Options: `nojustify`, `justify`, `hide`, `center`, `right`, `left`. | `nojustify` |
