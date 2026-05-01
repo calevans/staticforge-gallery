@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Calevans\Gallery;
 
 use EICC\StaticForge\Core\BaseFeature;
+use EICC\StaticForge\Core\EventManager;
 use EICC\StaticForge\Core\FeatureInterface;
 use Calevans\Gallery\Services\GalleryService;
 use Calevans\Gallery\Shortcodes\GalleryShortcode;
 use EICC\StaticForge\Shortcodes\ShortcodeManager;
 use EICC\Utils\Container;
 use EICC\Utils\Log;
-
 
 class Feature extends BaseFeature implements FeatureInterface
 {
@@ -27,9 +27,9 @@ class Feature extends BaseFeature implements FeatureInterface
         'CONSOLE_INIT' => ['method' => 'registerShortcode', 'priority' => 0]
     ];
 
-    public function register(): void
+    public function register(EventManager $eventManager): void
     {
-        parent::register();
+        parent::register($eventManager);
         $this->logger = $this->container->get('logger');
         $this->galleryService = new GalleryService($this->logger);
     }
