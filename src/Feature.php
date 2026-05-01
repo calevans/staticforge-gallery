@@ -6,7 +6,6 @@ namespace Calevans\Gallery;
 
 use EICC\StaticForge\Core\BaseFeature;
 use EICC\StaticForge\Core\FeatureInterface;
-use EICC\StaticForge\Core\EventManager;
 use Calevans\Gallery\Services\GalleryService;
 use Calevans\Gallery\Shortcodes\GalleryShortcode;
 use EICC\StaticForge\Shortcodes\ShortcodeManager;
@@ -27,10 +26,10 @@ class Feature extends BaseFeature implements FeatureInterface
         'CONSOLE_INIT' => ['method' => 'registerShortcode', 'priority' => 0]
     ];
 
-    public function register(EventManager $eventManager, Container $container): void
+    public function register(): void
     {
-        parent::register($eventManager, $container);
-        $this->logger = $container->get('logger');
+        parent::register();
+        $this->logger = $this->container->get('logger');
         $this->galleryService = new GalleryService($this->logger);
     }
 
@@ -41,7 +40,7 @@ class Feature extends BaseFeature implements FeatureInterface
         // Note: ShortcodeProcessor must be loaded before this feature.
         try {
             if ($container->has(ShortcodeManager::class)) {
-                $shortcodeManager = $container->get(ShortcodeManager::class);
+                $shortcodeManager = $this->container->get(ShortcodeManager::class);
                 $shortcode = new GalleryShortcode($this->galleryService);
                 $shortcodeManager->register($shortcode);
                 $this->logger->log('INFO', 'Gallery shortcode registered.');
@@ -57,7 +56,7 @@ class Feature extends BaseFeature implements FeatureInterface
 
     public function copyAssets(Container $container): void
     {
-        $outputDir = $container->getVariable('OUTPUT_DIR');
+        $outputDir = $this->container->getVariable('OUTPUT_DIR');
         if (!$outputDir) {
             return;
         }
