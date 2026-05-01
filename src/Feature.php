@@ -12,6 +12,7 @@ use EICC\StaticForge\Shortcodes\ShortcodeManager;
 use EICC\Utils\Container;
 use EICC\Utils\Log;
 
+
 class Feature extends BaseFeature implements FeatureInterface
 {
     protected string $name = 'PhotoGallery';
