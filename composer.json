@@ -24,6 +24,5 @@
         "staticforge": {
             "feature": "Calevans\\Gallery\\Feature"
         }
-    },
-    "version": "3.0.0"
+    }
 }
