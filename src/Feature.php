@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Calevans\Gallery;
 
 use EICC\StaticForge\Core\BaseFeature;
-use EICC\StaticForge\Core\EventManager;
+use EICC\StaticForge\Core\Events\ConsoleInitEvent;
+use EICC\StaticForge\Core\Events\Event;
+use EICC\StaticForge\Core\Events\EventListener;
 use EICC\StaticForge\Core\FeatureInterface;
 use Calevans\Gallery\Services\GalleryService;
 use Calevans\Gallery\Shortcodes\GalleryShortcode;
@@ -19,43 +21,42 @@ class Feature extends BaseFeature implements FeatureInterface
     protected Log $logger;
     private GalleryService $galleryService;
 
-    /**
-     * @var array<string, array{method: string, priority: int}>
-     */
-    protected array $eventListeners = [
-        'POST_LOOP' => ['method' => 'copyAssets', 'priority' => 100],
-        'CONSOLE_INIT' => ['method' => 'registerShortcode', 'priority' => 0]
-    ];
-
-    public function register(EventManager $eventManager): void
+    public function __construct(Container $container, Log $logger, GalleryService $galleryService)
     {
-        parent::register($eventManager);
-        $this->logger = $this->container->get('logger');
-        $this->galleryService = new GalleryService($this->logger);
+        $this->container = $container;
+        $this->logger = $logger;
+        $this->galleryService = $galleryService;
     }
 
-    public function registerShortcode(Container $container, array $payload): array
+    /**
+     * Register the gallery shortcode.
+     *
+     * Runs on CONSOLE_INIT (not register()) because ShortcodeManager,
+     * loaded by the ShortcodeProcessor feature, is not guaranteed to be
+     * registered in the container yet at Feature::register() time.
+     */
+    #[EventListener('CONSOLE_INIT', priority: 0)]
+    public function registerShortcode(ConsoleInitEvent $event): void
     {
-        // Register Shortcode
-        // We check if ShortcodeManager is available.
-        // Note: ShortcodeProcessor must be loaded before this feature.
         try {
-            if ($container->has(ShortcodeManager::class)) {
+            if ($this->container->has(ShortcodeManager::class)) {
                 $shortcodeManager = $this->container->get(ShortcodeManager::class);
                 $shortcode = new GalleryShortcode($this->galleryService);
                 $shortcodeManager->register($shortcode);
                 $this->logger->log('INFO', 'Gallery shortcode registered.');
             } else {
-                $this->logger->log('WARNING', 'ShortcodeManager not found in container. Gallery shortcode not registered.');
+                $this->logger->log(
+                    'WARNING',
+                    'ShortcodeManager not found in container. Gallery shortcode not registered.'
+                );
             }
         } catch (\Exception $e) {
-             $this->logger->log('WARNING', 'Failed to register Gallery shortcode: ' . $e->getMessage());
+            $this->logger->log('WARNING', 'Failed to register Gallery shortcode: ' . $e->getMessage());
         }
-
-        return $payload;
     }
 
-    public function copyAssets(Container $container): void
+    #[EventListener('POST_LOOP', priority: 100)]
+    public function copyAssets(Event $event): void
     {
         $outputDir = $this->container->getVariable('OUTPUT_DIR');
         if (!$outputDir) {
